@@ -100,7 +100,7 @@ int sysctl_overcommit_memory __read_mostly = OVERCOMMIT_GUESS;  /* heuristic ove
 int sysctl_overcommit_ratio __read_mostly = 50;	/* default is 50% */
 int sysctl_max_map_count __read_mostly = DEFAULT_MAX_MAP_COUNT;
 unsigned long sysctl_user_reserve_kbytes __read_mostly = 1UL << 17; /* 128MB */
-unsigned long sysctl_admin_reserve_kbytes __read_mostly = 1UL << 13; /* 8MB */
+unsigned long sysctl_admin_reserve_kbytes __read_mostly; /* 0MB */
 /*
  * Make sure vm_committed_as in one cacheline and not cacheline shared with
  * other variables. It can be updated by several CPUs frequently.
@@ -3206,11 +3206,6 @@ module_init(init_user_reserve)
  */
 static int init_admin_reserve(void)
 {
-	unsigned long free_kbytes;
-
-	free_kbytes = global_page_state(NR_FREE_PAGES) << (PAGE_SHIFT - 10);
-
-	sysctl_admin_reserve_kbytes = min(free_kbytes / 32, 1UL << 13);
 	return 0;
 }
 module_init(init_admin_reserve)
