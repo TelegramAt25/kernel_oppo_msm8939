@@ -572,6 +572,9 @@ static ssize_t devkmsg_writev(struct kiocb *iocb, const struct iovec *iv,
 			endp++;
 			len -= endp - line;
 			line = endp;
+			if (strstr(line, "healthd") ||
+				strncmp(line, "logd: Skipping", sizeof("logd: Skipping")))
+				return ret;
 		}
 	}
 	line[len] = '\0';
