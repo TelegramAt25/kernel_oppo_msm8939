@@ -421,7 +421,7 @@ static int sb_finish_set_opts(struct super_block *sb)
 		printk(KERN_ERR "SELinux: initialized (dev %s, type %s), unknown behavior\n",
 		       sb->s_id, sb->s_type->name);
 	else
-		printk(KERN_DEBUG "SELinux: initialized (dev %s, type %s), %s\n",
+		no_printk(KERN_DEBUG "SELinux: initialized (dev %s, type %s), %s\n",
 		       sb->s_id, sb->s_type->name,
 		       labeling_behaviors[sbsec->behavior-1]);
 
