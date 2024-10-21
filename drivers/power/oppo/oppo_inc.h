@@ -117,9 +117,6 @@
 #define pr_debug(fmt, ...) no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
 //#define pr_err(fmt, ...) printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
 
-#undef dev_dbg
-#define dev_dbg(dev, format, arg...) dev_printk(KERN_ERR, dev, format, ##arg)
-
 #ifndef OPCHARGER_DEBUG_ENABLE
 //#define OPCHARGER_DEBUG_ENABLE
 #endif

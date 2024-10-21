@@ -210,13 +210,8 @@ int bq24188_set_charging_disable(struct opchg_charger *chip, bool disable)
 #endif
     rc = opchg_masked_write(chip, BQ24188_CTRL_REG, BQ24188_CHARGE_EN_MASK,
                             disable ? BQ24188_CHARGE_DISABLE : BQ24188_CHARGE_ENABLE);
-    if (rc < 0) {
+    if (rc < 0)
 		pr_err("Couldn't set CHG_ENABLE_BIT disable = %d, rc = %d\n", disable, rc);
-	}
-	else
-	{
-		pr_err(" set CHG_ENABLE_BIT disable = %d\n", disable);
-	}
 
 	return rc;
 }
@@ -328,12 +323,12 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
     else if (iusbin_mA <= USB2_MIN_CURRENT_MA)
         iusbin_mA = USB2_MAX_CURRENT_MA;
 
-	pr_err("%s iusbin_mA:%d,aicl_current:%d,fast_current:%d,max_current:%d,aicl_enable:%d\n",__func__,
+	pr_debug("%s iusbin_mA:%d,aicl_current:%d,fast_current:%d,max_current:%d,aicl_enable:%d\n",__func__,
 		iusbin_mA,chip->aicl_current,chip->max_fast_current[FAST_CURRENT_MIN],chip->limit_current_max_ma,aicl_enable);
 
 	if(iusbin_mA <= CURRENT_500MA){
 		bq24188_iusbmax_set_noaicl(chip, iusbin_mA);
-		pr_err("%s no aicl 500ma,iusbin_mA:%d set input current is end\n",__func__,iusbin_mA);
+		pr_debug("%s no aicl 500ma,iusbin_mA:%d set input current is end\n",__func__,iusbin_mA);
 		chip->is_charger_det = 0;
 		return 0;
 	}
@@ -367,7 +362,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24188_iusbmax_set_noaicl(chip, iusbmax);
 			chip->aicl_working = false;
-			pr_err("%s aicl end 500ma_1,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
+			pr_debug("%s aicl end 500ma_1,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
 			chip->is_charger_det = 0;
 			return 0;
 		}
@@ -378,7 +373,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 		bq24188_iusbmax_set_noaicl(chip, iusbmax);
 		chip->aicl_working = false;
 		chip->is_charger_det = 0;
-		pr_err("%s aicl end 500ma_2,iusbmax:%d set input current is end\n",__func__,iusbmax);
+		pr_debug("%s aicl end 500ma_2,iusbmax:%d set input current is end\n",__func__,iusbmax);
 		return 0;
 	}
 
@@ -390,7 +385,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 			chip->aicl_current = CURRENT_500MA;
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24188_iusbmax_set_noaicl(chip, iusbmax);
-			pr_err("%s aicl end 500ma_3,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
+			pr_debug("%s aicl end 500ma_3,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
 			chip->aicl_working = false;
 			chip->is_charger_det = 0;
 			return 0;
@@ -401,7 +396,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 		chip->aicl_current = CURRENT_900MA;
 		iusbmax = min(iusbin_mA, chip->aicl_current);
 		bq24188_iusbmax_set_noaicl(chip, iusbmax);
-		pr_err("%s aicl end 900ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
+		pr_debug("%s aicl end 900ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
 		chip->aicl_working = false;
 		chip->is_charger_det = 0;
 		return 0;
@@ -415,7 +410,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 			chip->aicl_current = CURRENT_900MA;
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24188_iusbmax_set_noaicl(chip, iusbmax);
-			pr_err("%s aicl end 900ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
+			pr_debug("%s aicl end 900ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
 			chip->aicl_working = false;
 			chip->is_charger_det = 0;
 			return 0;
@@ -425,7 +420,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 		chip->aicl_current = CURRENT_1500MA;
 		iusbmax = min(iusbin_mA, chip->aicl_current);
 		bq24188_iusbmax_set_noaicl(chip, iusbmax);
-		pr_err("%s aicl end 1500ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
+		pr_debug("%s aicl end 1500ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
 		chip->aicl_working = false;
 		chip->is_charger_det = 0;
 		return 0;
@@ -439,7 +434,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 			chip->aicl_current = CURRENT_1500MA;
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24188_iusbmax_set_noaicl(chip, iusbmax);
-			pr_err("%s aicl end 1500ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
+			pr_debug("%s aicl end 1500ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
 			chip->aicl_working = false;
 			chip->is_charger_det = 0;
 			return 0;
@@ -450,7 +445,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 		chip->aicl_current = CURRENT_1950MA;
 		iusbmax = min(iusbin_mA, chip->aicl_current);
 		bq24188_iusbmax_set_noaicl(chip, iusbmax);
-		pr_err("%s aicl end 1950ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
+		pr_debug("%s aicl end 1950ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
 		chip->aicl_working = false;
 		chip->is_charger_det = 0;
 		return 0;
@@ -464,7 +459,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 			chip->aicl_current = CURRENT_1950MA;
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24188_iusbmax_set_noaicl(chip, iusbmax);
-			pr_err("%s aicl end 1950ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
+			pr_debug("%s aicl end 1950ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
 			chip->aicl_working = false;
 			chip->is_charger_det = 0;
 			return 0;
@@ -475,7 +470,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 		chip->aicl_current = CURRENT_2000MA;
 		iusbmax = min(iusbin_mA, chip->aicl_current);
 		bq24188_iusbmax_set_noaicl(chip, iusbmax);
-		pr_err("%s aicl end 2000ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
+		pr_debug("%s aicl end 2000ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
 		chip->aicl_working = false;
 		chip->is_charger_det = 0;
 		return 0;
@@ -489,7 +484,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 			chip->aicl_current = CURRENT_2000MA;
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24188_iusbmax_set_noaicl(chip, iusbmax);
-			pr_err("%s aicl end 2000ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
+			pr_debug("%s aicl end 2000ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
 			chip->aicl_working = false;
 			chip->is_charger_det = 0;
 			return 0;
@@ -501,7 +496,7 @@ int bq24188_set_input_chg_current_aicl(struct opchg_charger *chip, int iusbin_mA
 	bq24188_iusbmax_set_noaicl(chip, iusbmax);
 	chip->aicl_working = false;
     chip->is_charger_det = 0;
-	pr_err("%s aicl end 2500ma,iusbmax:%d set input current is end\n",__func__,iusbmax);
+	pr_debug("%s aicl end 2500ma,iusbmax:%d set input current is end\n",__func__,iusbmax);
     return 0;
 }
 
@@ -588,7 +583,6 @@ int bq24188_set_float_voltage(struct opchg_charger *chip, int vfloat_mv)
 		if((!chip->batt_authen) && (vfloat_mv > chip->non_standard_vfloat_mv))
 			vfloat_mv = chip->non_standard_vfloat_mv;
 	}
-	pr_err("%s vddmax:%d\n",__func__,vfloat_mv);
 	value = (vfloat_mv - BQ24188_VDDMAX_MIN_MV)/BQ24188_VDDMAX_STEP_MV;
 	value <<= BQ24188_VDDMAX_SHIFT;
 
@@ -622,11 +616,8 @@ int bq24188_set_complete_charge_timeout(struct opchg_charger *chip, int val)
 		value = BQ24188_TIMEOUT_DISABLED;
 
     rc = opchg_masked_write(chip, BQ24188_TIMEOUT_NTC_REG, BQ24188_TIMEOUT_MASK, value);
-    if (rc < 0) {
+    if (rc < 0)
         dev_err(chip->dev, "Couldn't complete charge timeout rc = %d\n", rc);
-    } else {
-		dev_err(chip->dev, "oppo set charger_timeout val = %d\n", value);
-	}
 
     return rc;
 }

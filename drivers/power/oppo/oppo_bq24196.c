@@ -246,14 +246,9 @@ int bq24196_set_charging_disable(struct opchg_charger *chip, bool disable)
     
     rc = opchg_masked_write(chip, REG01_BQ24196_ADDRESS, REG01_BQ24196_CHARGING_MASK,
                             disable ? REG01_BQ24196_CHARGING_DISABLE : REG01_BQ24196_CHARGING_ENABLE);
-    if (rc < 0) {
+    if (rc < 0)
 		pr_err("Couldn't set CHG_ENABLE_BIT disable = %d, rc = %d\n", disable, rc);
-	}
-	else
-	{
-		pr_err(" set CHG_ENABLE_BIT disable = %d\n", disable);
-	}
-	
+
 	return rc;
 }
 
@@ -405,21 +400,21 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
         iusbin_mA = USB2_MAX_CURRENT_MA;
 
 	#ifdef OPCHARGER_DEBUG_ENABLE
-	pr_err("%s iusbin_mA:%d,aicl_current:%d,fast_current:%d,max_current:%d,aicl_enable:%d\n",__func__,
+	pr_debug("%s iusbin_mA:%d,aicl_current:%d,fast_current:%d,max_current:%d,aicl_enable:%d\n",__func__,
 		iusbin_mA,chip->aicl_current,chip->max_fast_current[FAST_CURRENT_MIN],chip->limit_current_max_ma,aicl_enable);
 	#endif
 	
 	// set current < 500mA
 	if(iusbin_mA <= CURRENT_500MA){
 		bq24196_iusbmax_set_noaicl(chip, iusbin_mA);
-		pr_err("%s no aicl 500ma,iusbin_mA:%d set input current is end \n",__func__,iusbin_mA);
+		pr_debug("%s no aicl 500ma,iusbin_mA:%d set input current is end \n",__func__,iusbin_mA);
 		chip->is_charger_det = 0;
 		/*Mofei@EXP.BaseDrv.charge,2016/03/23 add for trying aicl when iacl is in 500 at the beginning */
 		if(chip->chg_present == 0)
 			count = 0;
 		return 0;
 	}
-    pr_err("%s chip->aicl_current:%d ,aicl_enable:%d iusbin_mA:%d\n",__func__,chip->aicl_current,aicl_enable,iusbin_mA);
+    pr_debug("%s chip->aicl_current:%d ,aicl_enable:%d iusbin_mA:%d\n",__func__,chip->aicl_current,aicl_enable,iusbin_mA);
 	mutex_lock(&chip->aicl_lock);/*Mofei@EXP.BaseDrv.charge,2016/03/16 add for aicl */
 	if((chip->aicl_current > 0) && (aicl_enable == false))
 	{
@@ -440,7 +435,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 					iusbmax = min(iusbin_mA, chip->aicl_current);
 					bq24196_iusbmax_set_noaicl(chip, iusbmax);
 					chip->aicl_working = false;
-					pr_err("%s aicl end 1500ma_3,chg_vol:%d,iusbmax:%d set input current is end\n",
+					pr_debug("%s aicl end 1500ma_3,chg_vol:%d,iusbmax:%d set input current is end\n",
 							__func__,chg_vol,iusbmax);
 					bq24196_usb_plugout_check_whenaicl(chip);
 					chip->is_charger_det = 0;
@@ -472,7 +467,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 	msleep(20);
 	opchg_set_fast_chg_current(chip, chip->max_fast_current[FAST_CURRENT_MIN]);
 	chip->aicl_working = true;
-    pr_err("%s chip->aicl_working:%d \n",__func__,chip->aicl_working);
+    pr_debug("%s chip->aicl_working:%d \n",__func__,chip->aicl_working);
 	// set current  500mA
 	bq24196_iusbmax_set_noaicl(chip, CURRENT_500MA);
 	msleep(90);
@@ -483,7 +478,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24196_iusbmax_set_noaicl(chip, iusbmax);
 			chip->aicl_working = false;
-			pr_err("%s aicl end 500ma_1,chg_vol:%d,iusbmax:%d set input current is end\n",
+			pr_debug("%s aicl end 500ma_1,chg_vol:%d,iusbmax:%d set input current is end\n",
 					__func__,chg_vol,iusbmax);
 			bq24196_usb_plugout_check_whenaicl(chip);
 			chip->is_charger_det = 0;
@@ -497,7 +492,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 		iusbmax = min(iusbin_mA, chip->aicl_current);
 		bq24196_iusbmax_set_noaicl(chip, iusbmax);
 		chip->aicl_working = false;
-		pr_err("%s aicl end 500ma_2,iusbmax:%d set input current is end\n",__func__,iusbmax);
+		pr_debug("%s aicl end 500ma_2,iusbmax:%d set input current is end\n",__func__,iusbmax);
 		chip->is_charger_det = 0;
 		mutex_unlock(&chip->aicl_lock);/*Mofei@EXP.BaseDrv.charge,2016/03/16 add for aicl */
 		return 0;
@@ -512,7 +507,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 			chip->aicl_current = CURRENT_500MA;
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24196_iusbmax_set_noaicl(chip, iusbmax);
-			pr_err("%s aicl end 500ma_3,chg_vol:%d,iusbmax:%d count:%d set input current is end\n",
+			pr_debug("%s aicl end 500ma_3,chg_vol:%d,iusbmax:%d count:%d set input current is end\n",
 					__func__,chg_vol,iusbmax,count);
 			bq24196_usb_plugout_check_whenaicl(chip);
 			chip->aicl_working = false;
@@ -539,7 +534,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 		iusbmax = min(iusbin_mA, chip->aicl_current);
 		bq24196_iusbmax_set_noaicl(chip, iusbmax);
 		chip->aicl_working = false;
-		pr_err("%s aicl end 900ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
+		pr_debug("%s aicl end 900ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
 		chip->is_charger_det = 0;
 		mutex_unlock(&chip->aicl_lock);/*Mofei@EXP.BaseDrv.charge,2016/03/16 add for aicl */
 		return 0;
@@ -561,7 +556,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 				chip->aicl_current = CURRENT_900MA;
 				iusbmax = min(iusbin_mA, chip->aicl_current);
 				bq24196_iusbmax_set_noaicl(chip, iusbmax);
-				pr_err("%s aicl end 900ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",
+				pr_debug("%s aicl end 900ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",
 						__func__,chg_vol,iusbmax);
 				chip->aicl_working = false;
 				bq24196_usb_plugout_check_whenaicl(chip);
@@ -577,7 +572,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24196_iusbmax_set_noaicl(chip, iusbmax);
 			chip->aicl_working = false;
-			pr_err("%s aicl end 1200ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
+			pr_debug("%s aicl end 1200ma_1,iusbmax:%d set input current is end\n",__func__,iusbmax);
 			chip->is_charger_det = 0;
 			mutex_unlock(&chip->aicl_lock);/*Mofei@EXP.BaseDrv.charge,2016/03/16 add for aicl */
 			return 0;
@@ -601,7 +596,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 			}
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24196_iusbmax_set_noaicl(chip, iusbmax);
-			pr_err("%s aicl end 1200ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",
+			pr_debug("%s aicl end 1200ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",
 					__func__,chg_vol,iusbmax);
 			chip->aicl_working = false;
 			bq24196_usb_plugout_check_whenaicl(chip);
@@ -616,7 +611,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 		iusbmax = min(iusbin_mA, chip->aicl_current);
 		bq24196_iusbmax_set_noaicl(chip, iusbmax);
 		chip->aicl_working = false;
-		pr_err("%s aicl end 1500ma_1,chg_vol:%d iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
+		pr_debug("%s aicl end 1500ma_1,chg_vol:%d iusbmax:%d set input current is end\n",__func__,chg_vol,iusbmax);
 		chip->is_charger_det = 0;
 		mutex_unlock(&chip->aicl_lock);/*Mofei@EXP.BaseDrv.charge,2016/03/16 add for aicl */
 		return 0;
@@ -631,7 +626,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 			chip->aicl_current = CURRENT_1500MA;
 			iusbmax = min(iusbin_mA, chip->aicl_current);
 			bq24196_iusbmax_set_noaicl(chip, iusbmax);
-			pr_err("%s aicl end 1500ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",
+			pr_debug("%s aicl end 1500ma_2,chg_vol:%d,iusbmax:%d set input current is end\n",
 					__func__,chg_vol,iusbmax);
 			chip->aicl_working = false;
 			bq24196_usb_plugout_check_whenaicl(chip);
@@ -645,7 +640,7 @@ int bq24196_set_input_chg_current(struct opchg_charger *chip, int iusbin_mA, boo
 	iusbmax = min(iusbin_mA, chip->aicl_current);
 	bq24196_iusbmax_set_noaicl(chip, iusbmax);
 	chip->aicl_working = false;
-	pr_err("%s aicl end 2000ma,iusbmax:%d set input current is end\n",__func__,iusbmax);
+	pr_debug("%s aicl end 2000ma,iusbmax:%d set input current is end\n",__func__,iusbmax);
     chip->is_charger_det = 0;
 	mutex_unlock(&chip->aicl_lock);/*Mofei@EXP.BaseDrv.charge,2016/03/16 add for aicl */
     return 0;
@@ -682,14 +677,9 @@ int bq24196_set_complete_charge_timeout(struct opchg_charger *chip, int val)
     }
     
     rc = opchg_masked_write(chip, REG05_BQ24196_ADDRESS, REG05_BQ24196_CHARGING_SAFETY_TIME_MASK | REG05_BQ24196_FAST_CHARGING_TIMEOUT_MASK, val);
-    if (rc < 0) {
+    if (rc < 0)
         dev_err(chip->dev, "Couldn't complete charge timeout rc = %d\n", rc);
-    }
-	else
-	{
-		dev_err(chip->dev, "oppo set charger_timeout val = %d\n", val);
-	}
-    
+
     return rc;
 }
 
