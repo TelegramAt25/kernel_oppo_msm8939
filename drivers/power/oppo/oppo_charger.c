@@ -399,7 +399,7 @@ int opchg_regulator_init(struct opchg_charger *chip)
 
 		#if 1
 		chip->otg_vreg.rdev = regulator_register(&chip->otg_vreg.rdesc, &cfg);
-		dev_err(chip->dev, "oppo_debug OTG set vbus \n");
+		dev_dbg(chip->dev, "oppo_debug OTG set vbus \n");
 		#else
 		chip->otg_vreg.rdev = regulator_register(
 						    &chip->otg_vreg.rdesc, cfg.dev,
