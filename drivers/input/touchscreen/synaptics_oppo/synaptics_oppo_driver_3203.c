@@ -116,7 +116,7 @@ struct test_header {
 	#define VEE_DETECT_S3203      0x20
 	#define CIRCLE_DETECT_S3203   0x08
 	#define SWIPE_DETECT_S3203    0x02
-	#define DTAP_DETECT_S3203     0x01
+	#define DTAP_DETECT_S3203     0x1
 
 
 	#define UnkownGestrue       0
@@ -1162,7 +1162,7 @@ static void synaptics_get_coordinate_point(struct synaptics_ts_data *ts)
 
 static void gesture_judge(struct synaptics_ts_data *ts)
 {
-	int ret = 0,gesture_sign, regswipe;
+	int ret = 0,gesture_sign, regswipe, keycode;
     uint8_t gesture_buffer[10]; 
 	
 	TPD_DEBUG("%s is called!\n",__func__); 
@@ -1182,6 +1182,14 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 	switch (gesture_sign) {
 	case DTAP_DETECT_S3203:
 		gesture = DouTap;
+		if (ts->double_enable) {
+			keycode = KEY_POWER;
+			input_report_key(ts->input_dev, keycode, 1);
+			input_sync(ts->input_dev);
+			msleep(3);
+			input_report_key(ts->input_dev, keycode, 0);
+			input_sync(ts->input_dev);
+		}
 		break;
 	case SWIPE_DETECT_S3203:
 		gesture =   (regswipe == 0x41) ? Left2RightSwip   :
@@ -2276,6 +2284,9 @@ static int	synaptics_input_init(struct synaptics_ts_data *ts)
 	set_bit(KEY_HOME, ts->input_dev->keybit);
 	set_bit(KEY_BACK, ts->input_dev->keybit);
 	set_bit(KEY_HOMEPAGE , ts->input_dev->keybit);
+
+	set_bit(KEY_POWER, ts->input_dev->keybit);
+
 	input_set_drvdata(ts->input_dev, ts);
 	
 	if(input_register_device(ts->input_dev)) {
