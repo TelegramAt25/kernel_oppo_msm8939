@@ -128,12 +128,7 @@ struct test_header {
 #define TPD_ERR(a, arg...)  pr_err(TPD_DEVICE ": " a, ##arg)
 #define TPDTM_DMESG(a, arg...)  printk(TPD_DEVICE ": " a, ##arg)
 
-#define TPD_DEBUG(a,arg...)\
-	do{\
-		if(tp_debug)\
-			pr_err(TPD_DEVICE ": " a,##arg);\
-	}while(0)
-
+#define TPD_DEBUG(a,arg...) ((void)0)
 /*---------------------------------------------Global Variable----------------------------------------------*/
 static int baseline_ret = 0;
 static int TP_FW;
