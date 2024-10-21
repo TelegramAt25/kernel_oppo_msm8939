@@ -573,7 +573,8 @@ static ssize_t devkmsg_writev(struct kiocb *iocb, const struct iovec *iv,
 			len -= endp - line;
 			line = endp;
 			if (strstr(line, "healthd") ||
-				strncmp(line, "logd: Skipping", sizeof("logd: Skipping")))
+				strncmp(line, "logd: Skipping", sizeof("logd: Skipping")) ||
+				strstr(line, "vendor.qti.hardware.perf@2.0"))
 				return ret;
 		}
 	}
